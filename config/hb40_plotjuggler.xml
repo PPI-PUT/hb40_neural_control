@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget parent="main_window" name="Main Window">
+  <Tab containers="1" tab_name="fr">
+   <Container>
+    <DockSplitter sizes="0.333712;0.332577;0.333712" count="3" orientation="-">
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="1.594360" left="50.800402" bottom="-1.431800" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[0]" color="#1f77b4"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[0]" color="#d62728"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="2.510143" left="50.800402" bottom="-2.987699" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[1]" color="#1ac938"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[1]" color="#ff7f0e"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="2.426406" left="50.800402" bottom="-3.311075" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[2]" color="#f14cc1"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[2]" color="#9467bd"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="fl">
+   <Container>
+    <DockSplitter sizes="0.333712;0.332577;0.333712" count="3" orientation="-">
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="1.112731" left="50.800402" bottom="-1.211686" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[3]" color="#17becf"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[3]" color="#bcbd22"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="1.118903" left="50.800402" bottom="-7.665297" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[4]" color="#1f77b4"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[4]" color="#d62728"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="3.774961" left="50.800402" bottom="-2.081102" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[5]" color="#1ac938"/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[5]" color="#ff7f0e"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="rr">
+   <Container>
+    <DockSplitter sizes="0.333712;0.332577;0.333712" count="3" orientation="-">
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="2.831374" left="50.800402" bottom="-2.660696" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[6]" color="#f14cc1"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[6]" color="#bcbd22"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[9]" color="#9467bd"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="2.028192" left="50.800402" bottom="-1.446486" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[7]" color="#9467bd"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[7]" color="#1f77b4"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[10]" color="#1ac938"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="2.413475" left="50.800402" bottom="-3.538844" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[8]" color="#17becf"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[8]" color="#d62728"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[11]" color="#ff7f0e"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="rl">
+   <Container>
+    <DockSplitter sizes="0.333712;0.332577;0.333712" count="3" orientation="-">
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="3.481173" left="50.800402" bottom="-0.240690" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[9]" color="#9467bd"/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[9]" color="#17becf"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[6]" color="#bcbd22"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="1.157572" left="50.800402" bottom="-3.773305" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[10]" color="#1ac938"/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[10]" color="#bcbd22"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[7]" color="#1f77b4"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+       <range top="5.218474" left="50.800402" bottom="-1.832596" right="55.800455"/>
+       <limitY/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[11]" color="#ff7f0e"/>
+       <curve name="/hb40_neural_controller_node/output/debug/action/data[11]" color="#1f77b4"/>
+       <curve name="/hb40_neural_controller_node/output/debug/joint_command/t_pos[8]" color="#d62728"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="foot_contact">
+   <Container>
+    <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+     <DockSplitter sizes="0.500356;0.499644" count="2" orientation="|">
+      <DockArea name="...">
+       <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+        <range top="1.100000" left="50.800491" bottom="0.900000" right="55.800469"/>
+        <limitY/>
+        <curve name="/hb40_neural_controller_node/output/debug/foot_contact/data[0]" color="#d62728"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+        <range top="1.100000" left="50.800491" bottom="0.900000" right="55.800469"/>
+        <limitY/>
+        <curve name="/hb40_neural_controller_node/output/debug/foot_contact/data[1]" color="#1ac938"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+     <DockSplitter sizes="0.500356;0.499644" count="2" orientation="|">
+      <DockArea name="...">
+       <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+        <range top="1.100000" left="50.800491" bottom="0.900000" right="55.800469"/>
+        <limitY/>
+        <curve name="/hb40_neural_controller_node/output/debug/foot_contact/data[2]" color="#ff7f0e"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+        <range top="1.100000" left="50.800491" bottom="0.900000" right="55.800469"/>
+        <limitY/>
+        <curve name="/hb40_neural_controller_node/output/debug/foot_contact/data[3]" color="#f14cc1"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="cycle">
+   <Container>
+    <DockSplitter sizes="1" count="1" orientation="-">
+     <DockSplitter sizes="0.500356;0.499644" count="2" orientation="|">
+      <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+       <DockArea name="...">
+        <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+         <range top="0.100000" left="50.800482" bottom="-0.100000" right="55.800463"/>
+         <limitY/>
+         <curve name="/hb40_neural_controller_node/output/debug/cycles_since_last_contact/data[0]" color="#9467bd"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+         <range top="0.100000" left="50.800482" bottom="-0.100000" right="55.800463"/>
+         <limitY/>
+         <curve name="/hb40_neural_controller_node/output/debug/cycles_since_last_contact/data[2]" color="#bcbd22"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+       <DockArea name="...">
+        <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+         <range top="0.100000" left="50.800482" bottom="-0.100000" right="55.800463"/>
+         <limitY/>
+         <curve name="/hb40_neural_controller_node/output/debug/cycles_since_last_contact/data[1]" color="#17becf"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" flip_x="false" flip_y="false" mode="TimeSeries">
+         <range top="0.100000" left="50.800482" bottom="-0.100000" right="55.800463"/>
+         <limitY/>
+         <curve name="/hb40_neural_controller_node/output/debug/cycles_since_last_contact/data[3]" color="#1f77b4"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="5"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <parameters delimiter="0" time_axis=""/>
+  </plugin>
+  <plugin ID="DataLoad MCAP"/>
+  <plugin ID="DataLoad ROS2 bags">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+   <selected_topics value=""/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="ROS2 Topic Subscriber">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+   <selected_topics value="/hb40/joint_command;/hb40/robot_state;/hb40/velocity_command;/hb40_neural_controller_node/output/debug/action;/hb40_neural_controller_node/output/debug/cycles_since_last_contact;/hb40_neural_controller_node/output/debug/foot_contact;/hb40_neural_controller_node/output/debug/gravity;/hb40_neural_controller_node/output/debug/joint_command;/hb40_neural_controller_node/output/debug/joint_position;/hb40_neural_controller_node/output/debug/joint_velocity;/hb40_neural_controller_node/output/debug/nominal;/hb40_neural_controller_node/output/debug/tensor"/>
+  </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
+  <plugin ID="Fast Fourier Transform"/>
+  <plugin ID="Quaternion to RPY"/>
+  <plugin ID="Reactive Script Editor">
+   <library code="--[[ Helper function to create a series from arrays&#xa;&#xa; new_series: a series previously created with ScatterXY.new(name)&#xa; prefix:     prefix of the timeseries, before the index of the array&#xa; suffix_X:   suffix to complete the name of the series containing the X value. If [nil], use the index of the array.&#xa; suffix_Y:   suffix to complete the name of the series containing the Y value&#xa; timestamp:   usually the tracker_time variable&#xa;              &#xa; Example:&#xa; &#xa; Assuming we have multiple series in the form:&#xa; &#xa;   /trajectory/node.{X}/position/x&#xa;   /trajectory/node.{X}/position/y&#xa;   &#xa; where {N} is the index of the array (integer). We can create a reactive series from the array with:&#xa; &#xa;   new_series = ScatterXY.new(&quot;my_trajectory&quot;) &#xa;   CreateSeriesFromArray( new_series, &quot;/trajectory/node&quot;, &quot;position/x&quot;, &quot;position/y&quot;, tracker_time );&#xa;--]]&#xa;&#xa;function CreateSeriesFromArray( new_series, prefix, suffix_X, suffix_Y, timestamp )&#xa;  &#xa;  --- clear previous values&#xa;  new_series:clear()&#xa;  &#xa;  --- Append points to new_series&#xa;  index = 0&#xa;  while(true) do&#xa;&#xa;    x = index;&#xa;    -- if not nil, get the X coordinate from a series&#xa;    if suffix_X ~= nil then &#xa;      series_x = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_X) )&#xa;      if series_x == nil then break end&#xa;      x = series_x:atTime(timestamp)&#x9; &#xa;    end&#xa;    &#xa;    series_y = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_Y) )&#xa;    if series_y == nil then break end &#xa;    y = series_y:atTime(timestamp)&#xa;    &#xa;    new_series:push_back(x,y)&#xa;    index = index+1&#xa;  end&#xa;end&#xa;&#xa;--[[ Similar to the built-in function GetSeriesNames(), but select only the names with a give prefix. --]]&#xa;&#xa;function GetSeriesNamesByPrefix(prefix)&#xa;  -- GetSeriesNames(9 is a built-in function&#xa;  all_names = GetSeriesNames()&#xa;  filtered_names = {}&#xa;  for i, name in ipairs(all_names)  do&#xa;    -- check the prefix&#xa;    if name:find(prefix, 1, #prefix) then&#xa;      table.insert(filtered_names, name);&#xa;    end&#xa;  end&#xa;  return filtered_names&#xa;end&#xa;&#xa;--[[ Modify an existing series, applying offsets to all their X and Y values&#xa;&#xa; series: an existing timeseries, obtained with TimeseriesView.find(name)&#xa; delta_x: offset to apply to each x value&#xa; delta_y: offset to apply to each y value &#xa;  &#xa;--]]&#xa;&#xa;function ApplyOffsetInPlace(series, delta_x, delta_y)&#xa;  -- use C++ indeces, not Lua indeces&#xa;  for index=0, series:size()-1 do&#xa;    x,y = series:at(index)&#xa;    series:set(index, x + delta_x, y + delta_y)&#xa;  end&#xa;end&#xa;"/>
+   <scripts/>
+  </plugin>
+  <plugin ID="CSV Exporter"/>
+  <plugin ID="ROS2 Topic Re-Publisher"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles/>
+ <previouslyLoaded_Streamer name="ROS2 Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>
+
