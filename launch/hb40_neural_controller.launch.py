@@ -62,7 +62,7 @@ def generate_launch_description():
     add_launch_arg("input_robot_state", "/hb40/robot_state")
     add_launch_arg("input_bridge_state", "/hb40/bridge_data")
     add_launch_arg("input_cmd_vel", "/hb40/velocity_command")
-    add_launch_arg("output_joint_command", "/hb40/xx/joint_command")
+    add_launch_arg("output_joint_command", "/hb40/joint_command")
     return LaunchDescription([
         *declared_arguments,
         OpaqueFunction(function=launch_setup)

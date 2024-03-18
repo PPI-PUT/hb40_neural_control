@@ -30,10 +30,11 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   kp_ = this->declare_parameter("kp", 2.0);
   kd_ = this->declare_parameter("kd", 0.2);
   sim_ = this->declare_parameter("sim", false);
-  std::vector<float> x ={
-    -0.1f, 0.8f, -1.5f, 0.1f, 0.8f, -1.5f,
-    -0.1f, 1.0f, -1.5f, 0.1f, 1.0f, -1.5f,
-    0.0f};
+  std::vector<float> x = {0.0f,
+    0.1f, -1.0f, -1.5f,
+    -0.1f, 0.8f, -1.5f,
+    -0.1f, 1.0f, -1.5f,
+    0.1f, -0.8f, -1.5f};
 
   hb40_neural_controller_ = std::make_unique<hb40_neural_controller::Hb40NeuralController>(
     model_path, x);
@@ -60,8 +61,8 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   cmd_msg_.t_pos = std::vector<float>(cmd_msg_.name.size(), 0.0);
   cmd_msg_.t_vel = std::vector<float>(cmd_msg_.name.size(), 0.0);
   cmd_msg_.t_trq = std::vector<float>(cmd_msg_.name.size(), 0.0);
-  
-  
+
+
   robot_state_msg_ = std::make_shared<RobotState>();
   bridge_data_msg_ = std::make_shared<BridgeData>();
 
@@ -88,8 +89,12 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   pub_foot_contact_ = this->create_publisher<VectorFloatMsg>("~/output/debug/foot_contact", qosRT);
   pub_cycles_since_last_contact_ = this->create_publisher<VectorFloatMsg>(
     "~/output/debug/cycles_since_last_contact", qosRT);
-  pub_joint_position_ = this->create_publisher<VectorFloatMsg>("~/output/debug/joint_position", qosRT);
-  pub_joint_velocity_ = this->create_publisher<VectorFloatMsg>("~/output/debug/joint_velocity", qosRT);
+  pub_joint_position_ = this->create_publisher<VectorFloatMsg>(
+    "~/output/debug/joint_position",
+    qosRT);
+  pub_joint_velocity_ = this->create_publisher<VectorFloatMsg>(
+    "~/output/debug/joint_velocity",
+    qosRT);
   pub_action_ = this->create_publisher<VectorFloatMsg>("~/output/debug/action", qosRT);
   pub_tensor_ = this->create_publisher<VectorFloatMsg>("~/output/debug/tensor", qosRT);
   pub_gravity_ = this->create_publisher<VectorFloatMsg>("~/output/debug/gravity", qosRT);
@@ -127,15 +132,14 @@ void Hb40NeuralControllerNode::controlLoop()
   cmd_msg_.kp = std::vector<float>(cmd_msg_.name.size(), kp_);
   cmd_msg_.kd = std::vector<float>(cmd_msg_.name.size(), kd_);
   cmd_msg_.header.stamp = this->now();
-  if( bridge_data_msg_->joint_position.size() == 0 || robot_state_msg_->leg.size() == 0)
-  {
+  if (bridge_data_msg_->joint_position.size() == 0 || robot_state_msg_->leg.size() == 0) {
     RCLCPP_WARN(this->get_logger(), "No data received");
     return;
   }
   cmd_msg_.name = bridge_data_msg_->joint_name;
-  auto pos = hb40_neural_controller_->modelForward(bridge_data_msg_, robot_state_msg_, cmd_vel_msg_);
-  if (pos.size() == 12)
-  {
+  auto pos =
+    hb40_neural_controller_->modelForward(bridge_data_msg_, robot_state_msg_, cmd_vel_msg_);
+  if (pos.size() == 12) {
     pos.push_back(0.0f);
   }
 

@@ -41,18 +41,19 @@ constexpr size_t RR_CYCLE = 2; // PLEASE CHECK TWICE
 
 // HERE WE GO AGAIN, NETWORK JOINT NAME ARE DIFFERENT SO ...
 // TU SIE ZATEGUJE
-constexpr size_t FR_HIP = 0;
-constexpr size_t FR_THIGH = 1;
-constexpr size_t FR_CALF = 2;
-constexpr size_t FL_HIP = 3;
-constexpr size_t FL_THIGH = 4;
-constexpr size_t FL_CALF = 5;
-constexpr size_t RR_HIP = 6;
-constexpr size_t RR_THIGH = 7;
-constexpr size_t RR_CALF = 8;
-constexpr size_t RL_HIP = 9;
-constexpr size_t RL_THIGH = 10;
-constexpr size_t RL_CALF = 11;
+constexpr size_t SPINE_0 = 0;
+constexpr size_t RL_HIP = 1;
+constexpr size_t RL_THIGH = 2;
+constexpr size_t RL_CALF = 3;
+constexpr size_t RR_HIP = 4;
+constexpr size_t RR_THIGH = 5;
+constexpr size_t RR_CALF = 6;
+constexpr size_t FR_HIP = 7;
+constexpr size_t FR_THIGH = 8;
+constexpr size_t FR_CALF = 9;
+constexpr size_t FL_HIP = 10;
+constexpr size_t FL_THIGH = 11;
+constexpr size_t FL_CALF = 12;
 // DID YOU KNOW THAT I LOVE HARDCODING?
 // MAB JOINTS NAME ARE DIFFERNT FROM THE UNITREE ONES
 // SO I HAVE TO HARDCODE IT TOO
@@ -72,6 +73,7 @@ constexpr size_t MAB_RR_CALF = _HB40_RR_KNEE;
 constexpr size_t MAB_RL_HIP = _HB40_RL_ABDUCTOR;
 constexpr size_t MAB_RL_THIGH = _HB40_RL_HIP;
 constexpr size_t MAB_RL_CALF = _HB40_RL_KNEE;
+constexpr size_t MAB_SPINE_0 = _HB40_SPINE_0;
 
 // I WILL GIVE YOU THAT, FUN IS FOR FREE
 // float state[53] = {

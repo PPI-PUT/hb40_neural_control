@@ -1,5 +1,5 @@
 /**:
   ros__parameters:
-    model_path: "/home/mackop/honey_badger_ws/src/hb40_neural_controller/policy/policy_obs_qpos_qvel_angvel_grav_prevact.pt"
+    model_path: "/home/mackop/honey_badger_ws/src/hb40_neural_controller/policy/badger_deployment_network_id2_v2.pt"
     kp : 20.0
     kd : 0.5

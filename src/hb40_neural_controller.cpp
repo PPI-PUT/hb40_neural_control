@@ -27,15 +27,15 @@ Hb40NeuralController::Hb40NeuralController(
 {
   cycles_since_last_contact_ = std::vector<float>(4, 0.0f);
   foot_contact_ = std::vector<float>(4, 0.0f);
-  joint_position_ = std::vector<float>(12, 0.0f);
-  joint_velocity_ = std::vector<float>(12, 0.0f);
+  joint_position_ = std::vector<float>(nominal_joint_position.size(), 0.0f);
+  joint_velocity_ = std::vector<float>(nominal_joint_position.size(), 0.0f);
   gravity_ = std::vector<float>(3, 0.0f);
   this->loadModel(model_path);
   nominal_ = nominal_joint_position;
   if (nominal_.size() != 13) {
     throw std::invalid_argument("Nominal joint position size is not 13");
   }
-  last_action_ = std::vector<float>(12, 0.0f); // or 13?
+  last_action_ = std::vector<float>(13, 0.0f);
 
 }
 
@@ -56,7 +56,8 @@ std::vector<float> Hb40NeuralController::modelForward(
   const std::shared_ptr<Twist> & twist)
 {
   auto state = this->createTensor(bridge, robot, twist);
-
+  std::cout << state.size() << std::endl;
+  
   last_state_ = state;
 
   auto tensor = torch::from_blob(state.data(), {1, static_cast<long>(state.size())});
@@ -86,6 +87,7 @@ std::vector<float> Hb40NeuralController::modelForward(
   joint_command[MAB_RL_HIP] = action_vec[RL_HIP];
   joint_command[MAB_RL_THIGH] = action_vec[RL_THIGH];
   joint_command[MAB_RL_CALF] = action_vec[RL_CALF];
+  joint_command[MAB_SPINE_0] = action_vec[SPINE_0];
   return joint_command;
 }
 
@@ -114,7 +116,7 @@ std::vector<float> Hb40NeuralController::createTensor(
     throw std::invalid_argument(
             "Bridge joint position size is not equal to bridge joint velocity size");
   }
-
+  joint_position_[SPINE_0] = normalize(bridge->joint_position[SPINE_0], nominal_[SPINE_0]);
   joint_position_[FR_HIP] = normalize(bridge->joint_position[MAB_FR_HIP], nominal_[FR_HIP]);
   joint_position_[FR_THIGH] = normalize(bridge->joint_position[MAB_FR_THIGH], nominal_[FR_THIGH]);
   joint_position_[FR_CALF] = normalize(bridge->joint_position[MAB_FR_CALF], nominal_[FR_CALF]);
@@ -139,7 +141,9 @@ std::vector<float> Hb40NeuralController::createTensor(
   tensor.push_back(static_cast<float>(bridge->angular_velocity.y));
   tensor.push_back(static_cast<float>(bridge->angular_velocity.z));
 
-  // // Joint velocity
+  // Joint velocity
+  joint_velocity_[SPINE_0] = bridge->joint_velocity[SPINE_0];
+
   joint_velocity_[FR_HIP] = bridge->joint_velocity[MAB_FR_HIP];
   joint_velocity_[FR_THIGH] = bridge->joint_velocity[MAB_FR_THIGH];
   joint_velocity_[FR_CALF] = bridge->joint_velocity[MAB_FR_CALF];
@@ -158,7 +162,7 @@ std::vector<float> Hb40NeuralController::createTensor(
 
   tensor.insert(tensor.end(), joint_velocity_.begin(), joint_velocity_.end());
 
-  // // Goal velocity
+  // Goal velocity
   tensor.push_back(static_cast<float>(twist->linear.x));
   tensor.push_back(static_cast<float>(twist->linear.y));
   tensor.push_back(static_cast<float>(twist->angular.z));
