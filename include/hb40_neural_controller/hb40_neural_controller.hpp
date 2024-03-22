@@ -41,40 +41,42 @@ using BridgeData = hb40_commons::msg::BridgeData;
 using RobotState = hb40_commons::msg::RobotState;
 using Imu = sensor_msgs::msg::Imu;
 using WrenchStamped = geometry_msgs::msg::WrenchStamped;
+using JointsArray = std::array<float, static_cast<size_t>(Joints::SIZE)>;
+using LegsArray = std::array<float, static_cast<size_t>(Legs::SIZE)>;
+using TensorArray = std::array<float, TENSOR_SIZE>;
+using GravityArray = std::array<float, 3>;
 class HB40_NEURAL_CONTROLLER_PUBLIC Hb40NeuralController
 {
 public:
   Hb40NeuralController();
   Hb40NeuralController(
-    const std::string model_path, std::vector<float> nominal_joint_position);
-  std::vector<float> modelForward(
+    const std::string model_path, JointsArray nominal_joint_position);
+  JointsArray modelForward(
     const std::shared_ptr<BridgeData> & bridge,
     const std::shared_ptr<RobotState> & robot,
     const std::shared_ptr<Twist> & twist);
-  std::vector<float> getNominal();
-  std::vector<float> getFootContact();
-  std::vector<float> getCyclesSinceLastContact();
-  std::vector<float> getJointPosition();
-  std::vector<float> getJointVelocity();
-  std::vector<float> getAction();
-  std::vector<float> getTensor();
-  Imu getImu();
-  std::vector<float> getGravity();
-  int64_t foo(int64_t bar) const;
+  JointsArray getNominal();
+  LegsArray getFootContact();
+  LegsArray getCyclesSinceLastContact();
+  JointsArray getJointPosition();
+  JointsArray getJointVelocity();
+  JointsArray getAction();
+  TensorArray getTensor();
+  GravityArray getGravity();
 
 private:
   std::shared_ptr<torch::jit::script::Module> module_;
   double scaled_factor_{SCALED_FACTOR};
-  std::vector<float> nominal_;
-  std::vector<float> foot_contact_;
-  std::vector<float> gravity_;
-  std::vector<float> cycles_since_last_contact_;
-  std::vector<float> joint_position_;
-  std::vector<float> joint_velocity_;
-  std::vector<float> last_action_;
-  std::vector<float> last_state_;
-  std::vector<float> convertToGravityVector(const QuaternionMsg & orientation);
-  std::vector<float> createTensor(
+  JointsArray nominal_;
+  LegsArray foot_contact_;
+  LegsArray cycles_since_last_contact_;
+  GravityArray gravity_;
+  JointsArray joint_position_;
+  JointsArray joint_velocity_;
+  JointsArray last_action_;
+  TensorArray tensor_;
+  GravityArray convertToGravityVector(const QuaternionMsg & orientation);
+  void createTensor(
     const std::shared_ptr<BridgeData> & bridge,
     const std::shared_ptr<RobotState> & robot,
     const std::shared_ptr<Twist> & twist);

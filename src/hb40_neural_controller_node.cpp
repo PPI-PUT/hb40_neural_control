@@ -30,11 +30,13 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   kp_ = this->declare_parameter("kp", 2.0);
   kd_ = this->declare_parameter("kd", 0.2);
   sim_ = this->declare_parameter("sim", false);
-  std::vector<float> x = {0.0f,
-    0.1f, -1.0f, -1.5f,
-    -0.1f, 0.8f, -1.5f,
+  std::array<float, 13> x = {
     -0.1f, 1.0f, -1.5f,
-    0.1f, -0.8f, -1.5f};
+    0.1f, -0.8f, 1.5f,
+    -0.1f, -1.0f, 1.5f,
+    0.1f, 0.8f, 1.5f,
+    0.0f};
+
 
   hb40_neural_controller_ = std::make_unique<hb40_neural_controller::Hb40NeuralController>(
     model_path, x);
@@ -133,39 +135,26 @@ void Hb40NeuralControllerNode::controlLoop()
   cmd_msg_.kd = std::vector<float>(cmd_msg_.name.size(), kd_);
   cmd_msg_.header.stamp = this->now();
   if (bridge_data_msg_->joint_position.size() == 0 || robot_state_msg_->leg.size() == 0) {
-    RCLCPP_WARN(this->get_logger(), "No data received");
+    RCLCPP_WARN_THROTTLE(
+      this->get_logger(), *this->get_clock(), 1000,
+      "No bridge data or robot state received");
     return;
   }
   cmd_msg_.name = bridge_data_msg_->joint_name;
   auto pos =
     hb40_neural_controller_->modelForward(bridge_data_msg_, robot_state_msg_, cmd_vel_msg_);
-  if (pos.size() == 12) {
-    pos.push_back(0.0f);
-  }
-
-  cmd_msg_.t_pos = pos;
+  cmd_msg_.t_pos.assign(pos.begin(), pos.end());
   cmd_msg_.t_vel = std::vector<float>(bridge_data_msg_->joint_name.size(), 0.0f);
   cmd_msg_.t_trq = std::vector<float>(bridge_data_msg_->joint_name.size(), 0.0f);
   pub_cmd_->publish(cmd_msg_);
   pub_cmd_debug_->publish(cmd_msg_);
 
-  VectorFloatMsg nominal_msg;
-  nominal_msg.data = hb40_neural_controller_->getNominal();
-  pub_nominal_->publish(nominal_msg);
-  nominal_msg.data = hb40_neural_controller_->getFootContact();
-  pub_foot_contact_->publish(nominal_msg);
-  nominal_msg.data = hb40_neural_controller_->getCyclesSinceLastContact();
-  pub_cycles_since_last_contact_->publish(nominal_msg);
-  nominal_msg.data = hb40_neural_controller_->getJointPosition();
-  pub_joint_position_->publish(nominal_msg);
-  nominal_msg.data = hb40_neural_controller_->getJointVelocity();
-  pub_joint_velocity_->publish(nominal_msg);
-  nominal_msg.data = hb40_neural_controller_->getAction();
-  pub_action_->publish(nominal_msg);
-  nominal_msg.data = hb40_neural_controller_->getTensor();
-  pub_tensor_->publish(nominal_msg);
-  nominal_msg.data = hb40_neural_controller_->getGravity();
-  pub_gravity_->publish(nominal_msg);
+  VectorFloatMsg tensor_msg;
+  RCLCPP_INFO(this->get_logger(), "Tensor size: %ld", hb40_neural_controller_->getTensor().size());
+  auto tensor = hb40_neural_controller_->getTensor();
+  tensor_msg.data.resize(tensor.size());
+  tensor_msg.data = std::vector<float>(tensor.begin(), tensor.end());
+  pub_tensor_->publish(tensor_msg);
 }
 
 }  // namespace hb40_neural_controller
