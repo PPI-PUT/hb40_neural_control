@@ -35,8 +35,7 @@ Hb40NeuralController::Hb40NeuralController(
   if (nominal_.size() != nominal_joint_position.size()) {
     throw std::invalid_argument("Nominal joint position size is not correct");
   }
-  std::copy(
-    nominal_joint_position.begin(), nominal_joint_position.end(), nominal_.begin());
+  nominal_ = nominal_joint_position;
   last_action_ = JointsArray{};
   this->loadModel(model_path);
 
@@ -62,7 +61,6 @@ JointsArray Hb40NeuralController::modelForward(
   this->createTensor(bridge, robot, twist);
 
   auto tensor = torch::from_blob(tensor_.data(), {1, static_cast<long>(tensor_.size())});
-  std::cout << tensor << std::endl;
   at::Tensor action = module_->forward({tensor}).toTensor();
   JointsArray action_arr;
 
@@ -108,7 +106,6 @@ void Hb40NeuralController::createTensor(
   // normalized_joint_position = reorderVector(
   //   bridge->joint_position,
   //   typename ReorderToTensor<JointsOrder>::type{});
-
   std::transform(
     nominal_.begin(), nominal_.end(),
     normalized_joint_position.begin(), normalized_joint_position.begin(),
@@ -126,9 +123,9 @@ void Hb40NeuralController::createTensor(
   //   bridge->joint_velocity,
   //   typename ReorderToTensor<JointsOrder>::type{});
   copyData(reorder_joint_velocity);
-  tensor_[index++] = static_cast<float>(twist->linear.x);
-  tensor_[index++] = static_cast<float>(twist->linear.y);
-  tensor_[index++] = static_cast<float>(twist->angular.z);
+  tensor_[index++] = twist->linear.x;
+  tensor_[index++] = twist->linear.y;
+  tensor_[index++] = twist->angular.z;
 
 
   // // Foot contact and cycles since last contact
@@ -163,8 +160,7 @@ void Hb40NeuralController::createTensor(
 
   // Last action
   copyData(last_action_);
-  // std::cout << "LAST ACTION: " << last_action_[0] << std::endl;
-
+  
   // // Cycles since last contact
   // copyData(cycles_since_last_contact_);
 }

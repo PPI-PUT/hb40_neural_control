@@ -30,11 +30,12 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   kp_ = this->declare_parameter("kp", 2.0);
   kd_ = this->declare_parameter("kd", 0.2);
   sim_ = this->declare_parameter("sim", false);
+  // check twice:
   std::array<float, 13> x = {
     -0.1f, 1.0f, -1.5f,
     0.1f, -0.8f, 1.5f,
     -0.1f, -1.0f, 1.5f,
-    0.1f, 0.8f, 1.5f,
+    0.1f, 0.8f, -1.5f,
     0.0f};
 
 
@@ -42,6 +43,7 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
     model_path, x);
 
   auto qosRT = rclcpp::QoS(1).best_effort().durability_volatile();
+  auto qos = rclcpp::QoS(1).keep_last(1).reliable().durability_volatile();
   // TODO fix bridge to add header
   // rmw_qos_profile_t qos_filter = rmw_qos_profile_default;
   // qos_filter.depth = 1;
@@ -80,10 +82,9 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
     "~/input/robot_state", qosRT,
     std::bind(&Hb40NeuralControllerNode::robotCallback, this, std::placeholders::_1));
   sub_cmd_vel_ = this->create_subscription<Twist>(
-    "~/input/cmd_vel", 10,
+    "~/input/cmd_vel", qos,
     std::bind(&Hb40NeuralControllerNode::cmdVelCallback, this, std::placeholders::_1));
   pub_cmd_ = this->create_publisher<JointCommand>("~/output/joint_command", qosRT);
-  auto qos = rclcpp::QoS(1).reliable().durability_volatile();
   pub_cmd_debug_ = this->create_publisher<JointCommand>("~/output/debug/joint_command", qos);
 
   //debug
@@ -150,7 +151,6 @@ void Hb40NeuralControllerNode::controlLoop()
   pub_cmd_debug_->publish(cmd_msg_);
 
   VectorFloatMsg tensor_msg;
-  RCLCPP_INFO(this->get_logger(), "Tensor size: %ld", hb40_neural_controller_->getTensor().size());
   auto tensor = hb40_neural_controller_->getTensor();
   tensor_msg.data.resize(tensor.size());
   tensor_msg.data = std::vector<float>(tensor.begin(), tensor.end());
