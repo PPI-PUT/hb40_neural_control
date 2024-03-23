@@ -57,15 +57,17 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   //   new Synchronizer(
   //     SyncPolicy(2), *robot_state_, *joint_state_));
   // sync_->registerCallback(&Hb40NeuralControllerNode::robotStateCallback, this);
-  cmd_msg_.source_node = "hb40_neural_controller";
-  cmd_msg_.name = std::vector<std::string>{"fr_j0", "fr_j1", "fr_j2", "fl_j0", "fl_j1",
+  auto joint_name = std::vector<std::string>{"fr_j0", "fr_j1", "fr_j2", "fl_j0", "fl_j1",
     "fl_j2", "rl_j0", "rl_j1", "rl_j2", "rr_j0", "rr_j1", "rr_j2", "sp_j0"};
-  cmd_msg_.kp = std::vector<float>(cmd_msg_.name.size(), kp_);
-  cmd_msg_.kd = std::vector<float>(cmd_msg_.name.size(), kd_);
-  cmd_msg_.t_pos = std::vector<float>(cmd_msg_.name.size(), 0.0);
-  cmd_msg_.t_vel = std::vector<float>(cmd_msg_.name.size(), 0.0);
-  cmd_msg_.t_trq = std::vector<float>(cmd_msg_.name.size(), 0.0);
-
+  cmd_msg_ = hb40_commons::build<JointCommand>()
+    .header(std_msgs::msg::Header())
+    .source_node("hb40_neural_controller")
+    .name(joint_name)
+    .kp(std::vector<float>(joint_name.size(), kp_))
+    .kd(std::vector<float>(joint_name.size(), kd_))
+    .t_pos(std::vector<float>(joint_name.size(), 0.0))
+    .t_vel(std::vector<float>(joint_name.size(), 0.0))
+    .t_trq(std::vector<float>(joint_name.size(), 0.0));
 
   robot_state_msg_ = std::make_shared<RobotState>();
   bridge_data_msg_ = std::make_shared<BridgeData>();
