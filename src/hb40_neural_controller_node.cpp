@@ -29,7 +29,6 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
     std::vector<float>());
   kp_ = this->declare_parameter("kp", 2.0);
   kd_ = this->declare_parameter("kd", 0.2);
-  sim_ = this->declare_parameter("sim", false);
   // check twice:
   std::array<float, 13> x = {
     -0.1f, 1.0f, -1.5f,
@@ -86,6 +85,17 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   sub_cmd_vel_ = this->create_subscription<Twist>(
     "~/input/cmd_vel", qos,
     std::bind(&Hb40NeuralControllerNode::cmdVelCallback, this, std::placeholders::_1));
+  sub_cmd_ = this->create_subscription<std_msgs::msg::String>(
+    "~/input/system_cmd", qos,
+    [this](const std_msgs::msg::String::SharedPtr msg) {
+      // how to compare strings in ROS2?
+      if (msg->data == "nn_activate" && activate_ == false) {
+        activate_ = true;
+      } else if (msg->data == "nn_activate" && activate_ == true) {
+        activate_ = false;
+      }
+      RCLCPP_INFO(this->get_logger(), "Received command: '%s'", msg->data.c_str());
+    });
   pub_cmd_ = this->create_publisher<JointCommand>("~/output/joint_command", qosRT);
   pub_cmd_debug_ = this->create_publisher<JointCommand>("~/output/debug/joint_command", qos);
 
@@ -103,7 +113,6 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   pub_action_ = this->create_publisher<VectorFloatMsg>("~/output/debug/action", qosRT);
   pub_tensor_ = this->create_publisher<VectorFloatMsg>("~/output/debug/tensor", qosRT);
   pub_gravity_ = this->create_publisher<VectorFloatMsg>("~/output/debug/gravity", qosRT);
-
 }
 
 void Hb40NeuralControllerNode::robotStateCallback(
@@ -132,6 +141,7 @@ void Hb40NeuralControllerNode::bridgeCallback(BridgeData::SharedPtr msg)
 
 void Hb40NeuralControllerNode::controlLoop()
 {
+  cmd_msg_.source_node = activate_ ? "hb40_neural_controller" : "hb40_neural_controller_deactivate";
   kp_ = this->get_parameter("kp").as_double();
   kd_ = this->get_parameter("kd").as_double();
   cmd_msg_.kp = std::vector<float>(cmd_msg_.name.size(), kp_);
@@ -149,7 +159,10 @@ void Hb40NeuralControllerNode::controlLoop()
   cmd_msg_.t_pos.assign(pos.begin(), pos.end());
   cmd_msg_.t_vel = std::vector<float>(bridge_data_msg_->joint_name.size(), 0.0f);
   cmd_msg_.t_trq = std::vector<float>(bridge_data_msg_->joint_name.size(), 0.0f);
-  pub_cmd_->publish(cmd_msg_);
+  if (activate_) {
+    pub_cmd_->publish(cmd_msg_);
+  }
+
   pub_cmd_debug_->publish(cmd_msg_);
 
   VectorFloatMsg tensor_msg;

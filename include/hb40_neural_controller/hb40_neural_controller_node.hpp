@@ -25,6 +25,7 @@
 #include <message_filters/synchronizer.h>
 #include <geometry_msgs/msg/twist.hpp>
 #include <std_msgs/msg/float32_multi_array.hpp>
+#include <std_msgs/msg/string.hpp>
 
 namespace hb40_neural_controller
 {
@@ -45,7 +46,7 @@ private:
   Hb40NeuralControllerPtr hb40_neural_controller_{nullptr};
   float kp_{0.0f};
   float kd_{0.0f};
-  bool sim_{true};
+  bool activate_{false};
   std::shared_ptr<SubscriberRobot> robot_state_;
   std::shared_ptr<SubscriberBridge> joint_state_;
   std::shared_ptr<Synchronizer> sync_;
@@ -54,6 +55,7 @@ private:
   rclcpp::Subscription<Twist>::SharedPtr sub_cmd_vel_;
   rclcpp::Subscription<BridgeData>::SharedPtr sub_bridge_;
   rclcpp::Subscription<RobotState>::SharedPtr sub_state_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_cmd_;
   rclcpp::Publisher<JointCommand>::SharedPtr pub_cmd_;
   rclcpp::Publisher<JointCommand>::SharedPtr pub_cmd_debug_;
 
