@@ -40,6 +40,7 @@ def launch_setup(context, *args, **kwargs):
             ("~/input/bridge_data", LaunchConfiguration("input_bridge_state")),
             ("~/input/cmd_vel", LaunchConfiguration("input_cmd_vel")),
             ("~/output/joint_command", LaunchConfiguration("output_joint_command")),
+            ("~/input/system_cmd", LaunchConfiguration("input_system_cmd"))
         ],
         output='screen',
         arguments=['--ros-args', '--log-level', 'info', '--enable-stdout-logs'],
@@ -62,7 +63,8 @@ def generate_launch_description():
     add_launch_arg("input_robot_state", "/hb40/robot_state")
     add_launch_arg("input_bridge_state", "/hb40/bridge_data")
     add_launch_arg("input_cmd_vel", "/hb40/velocity_command")
-    add_launch_arg("output_joint_command", "/hb40/joint_command")
+    add_launch_arg("output_joint_command", "/hb40/joint_commandHighPrio")
+    add_launch_arg("input_system_cmd", "/hb40/control_command")
     return LaunchDescription([
         *declared_arguments,
         OpaqueFunction(function=launch_setup)
