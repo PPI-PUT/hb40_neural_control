@@ -41,7 +41,7 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   hb40_neural_controller_ = std::make_unique<hb40_neural_controller::Hb40NeuralController>(
     model_path, x);
 
-  auto qosRT = rclcpp::QoS(1).best_effort().durability_volatile();
+  auto qosRT = rclcpp::QoS(1).keep_last(1).best_effort().durability_volatile();
   auto qos = rclcpp::QoS(1).keep_last(1).reliable().durability_volatile();
   // TODO fix bridge to add header
   // rmw_qos_profile_t qos_filter = rmw_qos_profile_default;
@@ -67,7 +67,6 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
     .t_pos(std::vector<float>(joint_name.size(), 0.0))
     .t_vel(std::vector<float>(joint_name.size(), 0.0))
     .t_trq(std::vector<float>(joint_name.size(), 0.0));
-
   robot_state_msg_ = std::make_shared<RobotState>();
   bridge_data_msg_ = std::make_shared<BridgeData>();
 
