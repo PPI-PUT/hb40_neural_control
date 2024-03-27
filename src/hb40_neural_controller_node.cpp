@@ -87,13 +87,11 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   sub_cmd_ = this->create_subscription<std_msgs::msg::String>(
     "~/input/system_cmd", qos,
     [this](const std_msgs::msg::String::SharedPtr msg) {
-      // how to compare strings in ROS2?
       if (msg->data == "nn_activate" && activate_ == false) {
         activate_ = true;
       } else if (msg->data == "nn_activate" && activate_ == true) {
         activate_ = false;
       }
-      RCLCPP_INFO(this->get_logger(), "Received command: '%s'", msg->data.c_str());
     });
   pub_cmd_ = this->create_publisher<JointCommand>("~/output/joint_command", qosRT);
   pub_cmd_debug_ = this->create_publisher<JointCommand>("~/output/debug/joint_command", qos);
@@ -126,6 +124,7 @@ void Hb40NeuralControllerNode::robotStateCallback(
 void Hb40NeuralControllerNode::cmdVelCallback(Twist::SharedPtr msg)
 {
   cmd_vel_msg_ = msg;
+  cmd_vel_msg_->angular.z *= 0.5;
 }
 
 void Hb40NeuralControllerNode::robotCallback(RobotState::SharedPtr msg)

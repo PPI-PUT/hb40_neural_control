@@ -83,9 +83,9 @@ void Hb40NeuralController::createTensor(
   const std::shared_ptr<RobotState> & robot,
   const std::shared_ptr<Twist> & twist)
 {
-  auto* tensorPtr = &this->tensor_;
+  auto * tensorPtr = &this->tensor_;
   // tensor_.fill(0.0f);
-  auto index = 0;
+  size_t index = 0;
   auto copyData = [&index, tensorPtr](const auto & data) {
       std::memcpy(tensorPtr->data() + index, data.data(), data.size() * sizeof(float));
       index += data.size();
@@ -103,30 +103,23 @@ void Hb40NeuralController::createTensor(
 
   std::vector<float> normalized_joint_position(bridge->joint_position.size());
   normalized_joint_position = bridge->joint_position;
-  // normalized_joint_position = reorderVector(
-  //   bridge->joint_position,
-  //   typename ReorderToTensor<JointsOrder>::type{});
   std::transform(
     nominal_.begin(), nominal_.end(),
     normalized_joint_position.begin(), normalized_joint_position.begin(),
     [](float nominal, float pose) {return -1 * nominal + pose;}
   );
-  
   copyData(normalized_joint_position);
+  assert(index == normalized_joint_position.size());
   tensor_[index++] = static_cast<float>(bridge->angular_velocity.x);
   tensor_[index++] = static_cast<float>(bridge->angular_velocity.y);
   tensor_[index++] = static_cast<float>(bridge->angular_velocity.z);
-
-  std::vector<float> reorder_joint_velocity(bridge->joint_velocity.size());
-  reorder_joint_velocity = bridge->joint_velocity;
-  // reorder_joint_velocity = reorderVector(
-  //   bridge->joint_velocity,
-  //   typename ReorderToTensor<JointsOrder>::type{});
-  copyData(reorder_joint_velocity);
+  assert(index == normalized_joint_position.size() + 3);
+  copyData(bridge->joint_velocity);
+  assert(index == normalized_joint_position.size() + 3 + reorder_joint_velocity.size());
   tensor_[index++] = twist->linear.x;
   tensor_[index++] = twist->linear.y;
   tensor_[index++] = twist->angular.z;
-
+  assert(index == normalized_joint_position.size() + 3 + reorder_joint_velocity.size() + 3);
 
   // // Foot contact and cycles since last contact
   for (auto & leg : robot->leg) {
@@ -146,10 +139,15 @@ void Hb40NeuralController::createTensor(
       update_contact(NetworkLegs::RR);
     }
   }
+  // copyData(foot_contact_);
+  // assert(
+  //   index ==
+  //   normalized_joint_position.size() + 3 + reorder_joint_velocity.size() + 3 +
+  //   foot_contact_.size());
   // Gravity vector
   Quaternionf orientation(
     bridge->orientation.w, bridge->orientation.x, bridge->orientation.y, bridge->orientation.z);
-  Vector3f gravity = orientation * Vector3f(0.0f, 0.0f, -1.0f);
+  Vector3f gravity = orientation.toRotationMatrix().transpose() * Vector3f(0.0f, 0.0f, -1.0f);
   gravity.normalize();
   gravity_[0] = static_cast<float>(gravity.x());
   gravity_[1] = static_cast<float>(gravity.y());
@@ -157,12 +155,22 @@ void Hb40NeuralController::createTensor(
   tensor_[index++] = gravity_[0];
   tensor_[index++] = gravity_[1];
   tensor_[index++] = gravity_[2];
-
+  assert(
+    index ==
+    normalized_joint_position.size() + 3 + reorder_joint_velocity.size() + 3 + 3);
   // Last action
   copyData(last_action_);
-  
+  assert(
+    index ==
+    normalized_joint_position.size() + 3 + reorder_joint_velocity.size() + 3 + 3 +
+    last_action_.size());
+
   // // Cycles since last contact
   // copyData(cycles_since_last_contact_);
+  // assert(
+  //   index ==
+  //   normalized_joint_position.size() + 3 + reorder_joint_velocity.size() + 3 + 3 + foot_contact_.size() + last_action_.size() +
+  //   cycles_since_last_contact_.size());
 }
 
 JointsArray Hb40NeuralController::getNominal()
