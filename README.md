@@ -22,6 +22,7 @@ colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_E
 ```bash
 ros2 launch hb40_neural_controller hb40_neural_controller.launch.py
 ```
+check and change launch.py to use package with sim or robot
 
 ## API
 <!-- Required -->
