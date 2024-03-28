@@ -44,13 +44,13 @@ using WrenchStamped = geometry_msgs::msg::WrenchStamped;
 using JointsArray = std::array<float, static_cast<size_t>(Joints::SIZE)>;
 using LegsArray = std::array<float, static_cast<size_t>(Legs::SIZE)>;
 using TensorArray = std::array<float, TENSOR_SIZE>;
-using GravityArray = std::array<float, 3>;
+using GravityArray = std::array<float, VECTOR3_SIZE>;
 class HB40_NEURAL_CONTROLLER_PUBLIC Hb40NeuralController
 {
 public:
   Hb40NeuralController();
   Hb40NeuralController(
-    const std::string model_path, JointsArray nominal_joint_position);
+    const std::string model_path);
   JointsArray modelForward(
     const std::shared_ptr<BridgeData> & bridge,
     const std::shared_ptr<RobotState> & robot,
@@ -65,7 +65,7 @@ public:
   GravityArray getGravity();
 
 private:
-  std::shared_ptr<torch::jit::script::Module> module_;
+  std::unique_ptr<torch::jit::script::Module> module_;
   double scaled_factor_{SCALED_FACTOR};
   JointsArray nominal_;
   LegsArray foot_contact_;
@@ -75,7 +75,8 @@ private:
   JointsArray joint_velocity_;
   JointsArray last_action_;
   TensorArray tensor_;
-  GravityArray convertToGravityVector(const QuaternionMsg & orientation);
+  GravityArray convertToGravityVector(
+    const QuaternionMsg & orientation);
   void createTensor(
     const std::shared_ptr<BridgeData> & bridge,
     const std::shared_ptr<RobotState> & robot,

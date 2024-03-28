@@ -24,18 +24,20 @@ Hb40NeuralController::Hb40NeuralController()
 }
 
 Hb40NeuralController::Hb40NeuralController(
-  const std::string model_path, JointsArray nominal_joint_position)
+  const std::string model_path)
 {
+  nominal_ = {
+    -0.1f, 1.0f, -1.5f,
+    0.1f, -0.8f, 1.5f,
+    -0.1f, -1.0f, 1.5f,
+    0.1f, 0.8f, -1.5f,
+    0.0f};
   cycles_since_last_contact_ = LegsArray{};
   foot_contact_ = LegsArray{};
   joint_position_ = JointsArray{};
   joint_velocity_ = JointsArray{};
   tensor_ = TensorArray{};
   gravity_ = GravityArray{};
-  if (nominal_.size() != nominal_joint_position.size()) {
-    throw std::invalid_argument("Nominal joint position size is not correct");
-  }
-  nominal_ = nominal_joint_position;
   last_action_ = JointsArray{};
   this->loadModel(model_path);
 
@@ -44,8 +46,7 @@ Hb40NeuralController::Hb40NeuralController(
 void Hb40NeuralController::loadModel(std::string path)
 {
   try {
-    auto module = std::make_shared<torch::jit::script::Module>(torch::jit::load(path));
-    module_ = module;
+    module_ = std::make_unique<torch::jit::script::Module>(torch::jit::load(path));
   } catch (const c10::Error & e) {
     std::cerr << "Error loading the model\n";
     std::cerr << e.what();
@@ -69,7 +70,7 @@ JointsArray Hb40NeuralController::modelForward(
   } else {
     std::cerr << "Model output size is not equal to action array size\n";
   }
-  std::memcpy(last_action_.data(), action_arr.data(), action_arr.size() * sizeof(float));
+  std::copy(action_arr.begin(), action_arr.end(), last_action_.begin());
   std::transform(
     nominal_.begin(), nominal_.end(),
     action_arr.begin(), action_arr.begin(),
@@ -83,9 +84,8 @@ void Hb40NeuralController::createTensor(
   const std::shared_ptr<RobotState> & robot,
   const std::shared_ptr<Twist> & twist)
 {
-  auto* tensorPtr = &this->tensor_;
-  // tensor_.fill(0.0f);
-  auto index = 0;
+  auto * tensorPtr = &this->tensor_;
+  auto index = size_t{0};
   auto copyData = [&index, tensorPtr](const auto & data) {
       std::memcpy(tensorPtr->data() + index, data.data(), data.size() * sizeof(float));
       index += data.size();
@@ -100,33 +100,32 @@ void Hb40NeuralController::createTensor(
             "Nominal joint position size is not equal to bridge joint velocity size");
   }
 
-
   std::vector<float> normalized_joint_position(bridge->joint_position.size());
   normalized_joint_position = bridge->joint_position;
-  // normalized_joint_position = reorderVector(
-  //   bridge->joint_position,
-  //   typename ReorderToTensor<JointsOrder>::type{});
   std::transform(
     nominal_.begin(), nominal_.end(),
     normalized_joint_position.begin(), normalized_joint_position.begin(),
     [](float nominal, float pose) {return -1 * nominal + pose;}
   );
-  
   copyData(normalized_joint_position);
+  assert(index == normalized_joint_position.size());
   tensor_[index++] = static_cast<float>(bridge->angular_velocity.x);
   tensor_[index++] = static_cast<float>(bridge->angular_velocity.y);
   tensor_[index++] = static_cast<float>(bridge->angular_velocity.z);
-
-  std::vector<float> reorder_joint_velocity(bridge->joint_velocity.size());
-  reorder_joint_velocity = bridge->joint_velocity;
-  // reorder_joint_velocity = reorderVector(
-  //   bridge->joint_velocity,
-  //   typename ReorderToTensor<JointsOrder>::type{});
-  copyData(reorder_joint_velocity);
+  assert(index == normalized_joint_position.size() + VECTOR3_SIZE);
+  copyData(bridge->joint_velocity);
+  assert(
+    index == normalized_joint_position.size() +
+    VECTOR3_SIZE +
+    reorder_joint_velocity.size());
   tensor_[index++] = twist->linear.x;
   tensor_[index++] = twist->linear.y;
   tensor_[index++] = twist->angular.z;
-
+  assert(
+    index == normalized_joint_position.size() +
+    VECTOR3_SIZE +
+    reorder_joint_velocity.size() +
+    VECTOR3_SIZE);
 
   // // Foot contact and cycles since last contact
   for (auto & leg : robot->leg) {
@@ -146,10 +145,15 @@ void Hb40NeuralController::createTensor(
       update_contact(NetworkLegs::RR);
     }
   }
+  // copyData(foot_contact_);
+  // assert(
+  //   index ==
+  //   normalized_joint_position.size() + 3 + reorder_joint_velocity.size() + 3 +
+  //   foot_contact_.size());
   // Gravity vector
   Quaternionf orientation(
     bridge->orientation.w, bridge->orientation.x, bridge->orientation.y, bridge->orientation.z);
-  Vector3f gravity = orientation * Vector3f(0.0f, 0.0f, -1.0f);
+  Vector3f gravity = orientation.toRotationMatrix().transpose() * Vector3f(0.0f, 0.0f, -1.0f);
   gravity.normalize();
   gravity_[0] = static_cast<float>(gravity.x());
   gravity_[1] = static_cast<float>(gravity.y());
@@ -157,12 +161,28 @@ void Hb40NeuralController::createTensor(
   tensor_[index++] = gravity_[0];
   tensor_[index++] = gravity_[1];
   tensor_[index++] = gravity_[2];
-
+  assert(
+    index == normalized_joint_position.size() +
+    VECTOR3_SIZE +
+    reorder_joint_velocity.size() +
+    VECTOR3_SIZE +
+    VECTOR3_SIZE);
   // Last action
   copyData(last_action_);
-  
+  assert(
+    index == normalized_joint_position.size() +
+    VECTOR3_SIZE +
+    reorder_joint_velocity.size() +
+    VECTOR3_SIZE +
+    VECTOR3_SIZE +
+    last_action_.size());
+
   // // Cycles since last contact
   // copyData(cycles_since_last_contact_);
+  // assert(
+  //   index ==
+  //   normalized_joint_position.size() + 3 + reorder_joint_velocity.size() + 3 + 3 + foot_contact_.size() + last_action_.size() +
+  //   cycles_since_last_contact_.size());
 }
 
 JointsArray Hb40NeuralController::getNominal()

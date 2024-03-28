@@ -9,6 +9,7 @@ namespace hb40_neural_controller
 {
 constexpr size_t TENSOR_SIZE = 48;
 constexpr float SCALED_FACTOR = 0.25;
+constexpr size_t VECTOR3_SIZE = 3;
 
 enum class Joints
 {
