@@ -12,8 +12,6 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
   ${TORCH_INCLUDE_DIRS}
 )
-# set(msg "msg/hb40_neural_controller.msg")
-# ament_auto_generate_messages(${msg} )
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
   include/hb40_neural_controller/hb40_neural_controller.hpp

@@ -35,7 +35,7 @@ using SyncPolicy = message_filters::sync_policies::ApproximateTime<RobotState, B
 using Synchronizer = message_filters::Synchronizer<SyncPolicy>;
 using SubscriberBridge = message_filters::Subscriber<BridgeData>;
 using SubscriberRobot = message_filters::Subscriber<RobotState>;
-using Twist = geometry_msgs::msg::Twist; 
+using Twist = geometry_msgs::msg::Twist;
 using VectorFloatMsg = std_msgs::msg::Float32MultiArray;
 class HB40_NEURAL_CONTROLLER_PUBLIC Hb40NeuralControllerNode : public rclcpp::Node
 {
@@ -47,35 +47,31 @@ private:
   float kp_{0.0f};
   float kd_{0.0f};
   bool activate_{false};
-  std::shared_ptr<SubscriberRobot> robot_state_;
-  std::shared_ptr<SubscriberBridge> joint_state_;
-  std::shared_ptr<Synchronizer> sync_;
-
-  rclcpp::TimerBase::SharedPtr control_loop_;
+  JointCommand cmd_msg_;
+  std::shared_ptr<RobotState> robot_state_msg_;
+  std::shared_ptr<BridgeData> bridge_data_msg_;
+  std::shared_ptr<Twist> cmd_vel_msg_;
+  // std::shared_ptr<SubscriberRobot> robot_state_;
+  // std::shared_ptr<SubscriberBridge> joint_state_;
+  // std::shared_ptr<Synchronizer> sync_;
   rclcpp::Subscription<Twist>::SharedPtr sub_cmd_vel_;
   rclcpp::Subscription<BridgeData>::SharedPtr sub_bridge_;
   rclcpp::Subscription<RobotState>::SharedPtr sub_state_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_cmd_;
   rclcpp::Publisher<JointCommand>::SharedPtr pub_cmd_;
   rclcpp::Publisher<JointCommand>::SharedPtr pub_cmd_debug_;
-
-  // debug 
-  rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_nominal_;
-  rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_foot_contact_;
-  rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_cycles_since_last_contact_;
-  rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_joint_position_;
-  rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_joint_velocity_;
   rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_action_;
   rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_tensor_;
-  rclcpp::Publisher<VectorFloatMsg>::SharedPtr pub_gravity_;
-  JointCommand cmd_msg_;
-  std::shared_ptr<RobotState> robot_state_msg_;
-  std::shared_ptr<BridgeData> bridge_data_msg_;
-  std::shared_ptr<Twist> cmd_vel_msg_;
+  rclcpp::TimerBase::SharedPtr control_loop_;
   void robotStateCallback(RobotState::ConstSharedPtr robot, BridgeData::ConstSharedPtr bridge);
   void robotCallback(RobotState::SharedPtr robot);
   void bridgeCallback(BridgeData::SharedPtr bridge);
   void cmdVelCallback(Twist::SharedPtr twist); // TODO: change Twist to TwistStamped!
+  OnSetParametersCallbackHandle::SharedPtr set_param_res_;
+  rcl_interfaces::msg::SetParametersResult onSetParam(
+    const std::vector<rclcpp::Parameter> & params);
+  void pubTensor();
+  void pubAction();
   void controlLoop();
 };
 }  // namespace hb40_neural_controller
