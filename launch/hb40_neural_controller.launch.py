@@ -29,7 +29,6 @@ def launch_setup(context, *args, **kwargs):
             [FindPackageShare('hb40_neural_controller'),
              'config', 'hb40_neural_controller.param.yaml']
         ).perform(context)
-        
     hb40_neural_controller_node = Node(
         package='hb40_neural_controller',
         executable='hb40_neural_controller_node_exe',
@@ -41,7 +40,7 @@ def launch_setup(context, *args, **kwargs):
             ("~/input/robot_state", LaunchConfiguration("input_robot_state")),
             ("~/input/bridge_data", LaunchConfiguration("input_bridge_state")),
             ("~/input/cmd_vel", LaunchConfiguration("input_cmd_vel")),
-            ("~/output/joint_command", LaunchConfiguration("output_joint_command"),
+            ("~/output/joint_command", LaunchConfiguration("output_joint_command")),
             ("~/input/system_cmd", LaunchConfiguration("input_system_cmd"))
         ],
         output='screen',
@@ -68,7 +67,7 @@ def generate_launch_description():
     add_launch_arg("input_cmd_vel", "/hb40/velocity_command")
     add_launch_arg("output_joint_command", "/hb40/joint_command")
     # for simulation purposes:
-    # add_launch_arg("output_joint_command", "/hb40/joint_commandHighPrio") 
+    # add_launch_arg("output_joint_command", "/hb40/joint_commandHighPrio")
     add_launch_arg("input_system_cmd", "/hb40/control_command")
     return LaunchDescription([
         *declared_arguments,

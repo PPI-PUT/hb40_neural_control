@@ -117,14 +117,14 @@ void Hb40NeuralController::createTensor(
   assert(
     index == normalized_joint_position.size() +
     VECTOR3_SIZE +
-    reorder_joint_velocity.size());
+    bridge->joint_velocity.size());
   tensor_[index++] = twist->linear.x;
   tensor_[index++] = twist->linear.y;
   tensor_[index++] = twist->angular.z;
   assert(
     index == normalized_joint_position.size() +
     VECTOR3_SIZE +
-    reorder_joint_velocity.size() +
+    bridge->joint_velocity.size() +
     VECTOR3_SIZE);
 
   // // Foot contact and cycles since last contact
@@ -164,7 +164,7 @@ void Hb40NeuralController::createTensor(
   assert(
     index == normalized_joint_position.size() +
     VECTOR3_SIZE +
-    reorder_joint_velocity.size() +
+    bridge->joint_velocity.size() +
     VECTOR3_SIZE +
     VECTOR3_SIZE);
   // Last action
@@ -172,7 +172,7 @@ void Hb40NeuralController::createTensor(
   assert(
     index == normalized_joint_position.size() +
     VECTOR3_SIZE +
-    reorder_joint_velocity.size() +
+    bridge->joint_velocity.size() +
     VECTOR3_SIZE +
     VECTOR3_SIZE +
     last_action_.size());
