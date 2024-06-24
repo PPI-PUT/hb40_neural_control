@@ -46,7 +46,7 @@ private:
   Hb40NeuralControllerPtr hb40_neural_controller_{nullptr};
   float kp_{0.0f};
   float kd_{0.0f};
-  bool activate_{false};
+  bool activate_node_{false};
   JointCommand cmd_msg_;
   std::shared_ptr<RobotState> robot_state_msg_;
   std::shared_ptr<BridgeData> bridge_data_msg_;
@@ -67,6 +67,7 @@ private:
   void robotCallback(RobotState::SharedPtr robot);
   void bridgeCallback(BridgeData::SharedPtr bridge);
   void cmdVelCallback(Twist::SharedPtr twist); // TODO: change Twist to TwistStamped!
+  void systemCmdCallback(std_msgs::msg::String::SharedPtr msg);
   OnSetParametersCallbackHandle::SharedPtr set_param_res_;
   rcl_interfaces::msg::SetParametersResult onSetParam(
     const std::vector<rclcpp::Parameter> & params);

@@ -27,7 +27,7 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   auto model_path = this->declare_parameter("model_path", std::string("default"));
   kp_ = this->declare_parameter("kp", 2.0);
   kd_ = this->declare_parameter("kd", 0.2);
-  activate_ = this->declare_parameter("activate", false);
+  activate_node_ = this->declare_parameter("activate_node", false);
   hb40_neural_controller_ = std::make_unique<hb40_neural_controller::Hb40NeuralController>(
     model_path);
 
@@ -46,16 +46,18 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
     .t_trq(std::vector<float>(joint_name.size(), 0.0));
   robot_state_msg_ = std::make_shared<RobotState>();
   bridge_data_msg_ = std::make_shared<BridgeData>();
+  cmd_vel_msg_ = std::make_shared<Twist>();
   set_param_res_ =
     this->add_on_set_parameters_callback(
     std::bind(
       &Hb40NeuralControllerNode::onSetParam, this,
       _1));
-  cmd_vel_msg_ = std::make_shared<Twist>();
+  
   control_loop_ =
     this->create_wall_timer(
     std::chrono::milliseconds(20),
     std::bind(&Hb40NeuralControllerNode::controlLoop, this));
+
   sub_bridge_ = this->create_subscription<BridgeData>(
     "~/input/bridge_data", qosRT,
     std::bind(&Hb40NeuralControllerNode::bridgeCallback, this, _1));
@@ -67,18 +69,14 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
     std::bind(&Hb40NeuralControllerNode::cmdVelCallback, this, _1));
   sub_cmd_ = this->create_subscription<std_msgs::msg::String>(
     "~/input/system_cmd", qos,
-    [this](const std_msgs::msg::String::SharedPtr msg) {
-      if (msg->data == "nn_activate" && activate_ == false) {
-        activate_ = true;
-      } else if (msg->data == "nn_activate" && activate_ == true) {
-        activate_ = false;
-      }
-    });
+    std::bind(&Hb40NeuralControllerNode::systemCmdCallback, this, _1));
+
   pub_cmd_ = this->create_publisher<JointCommand>("~/output/joint_command", qosRT);
   pub_cmd_debug_ = this->create_publisher<JointCommand>("~/output/debug/joint_command", qos);
   pub_action_ = this->create_publisher<VectorFloatMsg>("~/output/debug/action", qos);
   pub_tensor_ = this->create_publisher<VectorFloatMsg>("~/output/debug/tensor", qos);
-  // TODO fix bridge topic and add header
+  
+  // TODO fix bridge topic and add header to robot interface
   // rmw_qos_profile_t qos_filter = rmw_qos_profile_default;
   // qos_filter.depth = 1;
   // qos_filter.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
@@ -93,6 +91,17 @@ Hb40NeuralControllerNode::Hb40NeuralControllerNode(const rclcpp::NodeOptions & o
   // sync_->registerCallback(&Hb40NeuralControllerNode::robotStateCallback, this);
 }
 
+void Hb40NeuralControllerNode::systemCmdCallback(std_msgs::msg::String::SharedPtr msg)
+{
+  if(msg->data == "nn_activate" && activate_node_ == false)
+  {
+    activate_node_ = true;
+  } else if ( msg->data == "nn_activate" && activate_node_ == true)
+  {
+    activate_node_ = false;
+  }
+}
+
 void Hb40NeuralControllerNode::robotStateCallback(
   RobotState::ConstSharedPtr robot,
   BridgeData::ConstSharedPtr bridge)
@@ -105,6 +114,7 @@ void Hb40NeuralControllerNode::robotStateCallback(
 void Hb40NeuralControllerNode::cmdVelCallback(Twist::SharedPtr msg)
 {
   cmd_vel_msg_ = msg;
+  // yaw in robot interface -2.0 to 2.0 nn inputs are -1.0 to 1.0
   cmd_vel_msg_->angular.z *= 0.5;
 }
 
@@ -138,7 +148,7 @@ void Hb40NeuralControllerNode::pubAction()
 
 void Hb40NeuralControllerNode::controlLoop()
 {
-  cmd_msg_.source_node = activate_ ? "hb40_neural_controller" : "hb40_neural_controller_deactivate";
+  cmd_msg_.source_node = activate_node_ ? "hb40_neural_controller" : "hb40_neural_controller_deactivate";
   cmd_msg_.header.stamp = this->now();
   if (bridge_data_msg_->joint_position.size() == 0 || robot_state_msg_->leg.size() == 0) {
     RCLCPP_WARN_THROTTLE(
@@ -148,14 +158,9 @@ void Hb40NeuralControllerNode::controlLoop()
   }
   cmd_msg_.name = bridge_data_msg_->joint_name;
   auto target_joint_positions =
-    hb40_neural_controller_->modelForward(
-    bridge_data_msg_,
-    robot_state_msg_,
-    cmd_vel_msg_);
-  cmd_msg_.t_pos.assign(
-    target_joint_positions.begin(),
-    target_joint_positions.end());
-  if (activate_) {
+    hb40_neural_controller_->modelForward(bridge_data_msg_, robot_state_msg_, cmd_vel_msg_);
+  cmd_msg_.t_pos.assign(target_joint_positions.begin(), target_joint_positions.end());
+  if (activate_node_) {
     pub_cmd_->publish(cmd_msg_);
   }
   pub_cmd_debug_->publish(cmd_msg_);
@@ -194,8 +199,8 @@ rcl_interfaces::msg::SetParametersResult Hb40NeuralControllerNode::onSetParam(
             result.reason = "Successfully set kd";
           }
         } else if (param.get_name() == "activate") {
-          activate_ = param.as_bool();
-          auto msg = activate_ ? "Activated" : "Deactivated";
+          activate_node_ = param.as_bool();
+          auto msg = activate_node_ ? "Activated" : "Deactivated";
           result.successful = true;
           result.reason = msg;
         }

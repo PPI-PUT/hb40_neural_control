@@ -17,6 +17,7 @@
 
 #include <cstdint>
 #include <torch/script.h>
+#include <ATen/ATen.h>
 #include <Eigen/Dense>
 
 #include <geometry_msgs/msg/quaternion.hpp>
@@ -28,6 +29,7 @@
 #include <hb40_commons/msg/robot_state.hpp>
 #include "hb40_neural_controller/hb40_neural_controller_constants.hpp"
 #include "hb40_neural_controller/visibility_control.hpp"
+
 
 namespace hb40_neural_controller
 {
@@ -67,17 +69,17 @@ public:
 private:
   std::unique_ptr<torch::jit::script::Module> module_;
   double scaled_factor_{SCALED_FACTOR};
-  JointsArray nominal_;
+  JointsArray nominal_joint_position_;
   LegsArray foot_contact_;
   LegsArray cycles_since_last_contact_;
   GravityArray gravity_;
   JointsArray joint_position_;
   JointsArray joint_velocity_;
   JointsArray last_action_;
-  TensorArray tensor_;
+  TensorArray input_tensor_;
   GravityArray convertToGravityVector(
     const QuaternionMsg & orientation);
-  void createTensor(
+  void setTensor(
     const std::shared_ptr<BridgeData> & bridge,
     const std::shared_ptr<RobotState> & robot,
     const std::shared_ptr<Twist> & twist);

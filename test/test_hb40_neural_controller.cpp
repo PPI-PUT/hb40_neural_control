@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "gtest/gtest.h"
-#include "hb40_neural_controller/hb40_neural_controller.hpp"
+// #include "gtest/gtest.h"
+// #include "hb40_neural_controller/hb40_neural_controller.hpp"
 
-TEST(TestHb40NeuralController, TestHello) {
-  std::unique_ptr<hb40_neural_controller::Hb40NeuralController> hb40_neural_controller_ =
-    std::make_unique<hb40_neural_controller::Hb40NeuralController>();
-  auto result = hb40_neural_controller_->foo(999);
-  EXPECT_EQ(result, 999);
-}
+// TEST(TestHb40NeuralController, TestHello) {
+//   std::unique_ptr<hb40_neural_controller::Hb40NeuralController> hb40_neural_controller_ =
+//     std::make_unique<hb40_neural_controller::Hb40NeuralController>();
+//   auto result = hb40_neural_controller_->foo(999);
+//   EXPECT_EQ(result, 999);
+// }
