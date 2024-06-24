@@ -31,28 +31,18 @@ check and change launch.py to use package with sim or robot
 
 ### Input
 
-| Name         | Type                  | Description  |
-| ------------ | --------------------- | ------------ |
-| `topic_name` | std_msgs::msg::String | Sample desc. |
+| Name          | Type       | Description                                                                                                                              |
+| ------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `bridge_data` | BridgeData | Messages contain the data send from MainBoard with update frames - actuator positions, velocities, torques as well as raw data from AHRS |
+| `robot_state` | RobotState | Contains output of MAB state estimation, kinematics and dynamics.                                                                        |
+| `cmd_vel`     | Twist      | Joystick msg                                                                                                                             |
+| `system_cmd`  | String     | System msg                                                                                                                               |
 
 ### Output
 
-| Name         | Type                  | Description  |
-| ------------ | --------------------- | ------------ |
-| `topic_name` | std_msgs::msg::String | Sample desc. |
-
-### Services and Actions
-
-| Name           | Type                   | Description  |
-| -------------- | ---------------------- | ------------ |
-| `service_name` | std_srvs::srv::Trigger | Sample desc. |
-
-### Parameters
-
-| Name         | Type | Description  |
-| ------------ | ---- | ------------ |
-| `param_name` | int  | Sample desc. |
-
-
-## References / External links
-<!-- Optional -->
+| Name                  | Type           | Description                                                                                                                         |
+| --------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `joint_command`       | JointCommand   | Contains commands for robots actuators: target position, velocity and torque as well as positional gain (kp) and velocity gain (kd) |
+| `debug/joint_command` | JointCommand   | Sample debug.                                                                                                                       |
+| `debug/action`        | VectorFloatMsg | Sample debug.                                                                                                                       |
+| `debug/tensor`        | VectorFloatMsg | Sample debug.                                                                                                                       |
